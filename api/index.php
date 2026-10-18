@@ -1,16 +1,27 @@
 <?php
 
-// Arahkan storage & view compiled ke direktori /tmp Vercel yang writable
-$_ENV['APP_STORAGE'] = '/tmp/storage';
-$_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
+// Set jalur folder storage Laravel ke direktori /tmp milik Vercel
+$storagePath = '/tmp/storage';
 
-// Buat struktur folder di /tmp jika belum ada
-if (!is_dir('/tmp/storage/framework/views')) {
-    mkdir('/tmp/storage/framework/views', 0755, true);
+// Daftar folder di dalam /tmp yang wajib ada untuk Laravel
+$directories = [
+    $storagePath . '/app/public',
+    $storagePath . '/framework/cache/data',
+    $storagePath . '/framework/sessions',
+    $storagePath . '/framework/views',
+    $storagePath . '/logs',
+];
+
+// Otomatis buat folder jika belum ada di /tmp
+foreach ($directories as $directory) {
+    if (!is_dir($directory)) {
+        mkdir($directory, 0755, true);
+    }
 }
 
-if (!is_dir('/tmp/storage/logs')) {
-    mkdir('/tmp/storage/logs', 0755, true);
-}
+// Timpa jalur penyimpanan default Laravel
+$_ENV['APP_STORAGE'] = $storagePath;
+$_ENV['VIEW_COMPILED_PATH'] = $storagePath . '/framework/views';
 
+// Panggil entry point bawaan Laravel
 require __DIR__ . '/../public/index.php';
